@@ -8,6 +8,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      NEXT_PUBLIC_BASE_PATH: /earth-day-word-search
+
     steps:
       - name: Get files
         uses: actions/checkout@v2
