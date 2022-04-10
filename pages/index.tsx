@@ -150,8 +150,10 @@ class Home extends Component {
   };
 
   handleEnter = () => {
-    const guess = this.state.input.toUpperCase().trim();
+    var guess = this.state.input.toUpperCase().trim();
     const target = this.state.poem.target;
+
+    guess = guess.slice(0, 5);
 
     if (! this.state.poem.words.includes(guess)) {
       this.setState({
