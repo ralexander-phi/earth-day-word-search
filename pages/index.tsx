@@ -9,7 +9,9 @@ import { render } from "react-dom";
 import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
 
-function labelGuess(target, guess) {
+/* eslint-disable react/display-name */
+
+function labelGuess(target:string, guess:string) {
   var labels = ['miss', 'miss', 'miss', 'miss', 'miss'];
 
   var moveMe = [];
@@ -34,8 +36,8 @@ function labelGuess(target, guess) {
   return labels;
 }
 
-function renderGuess(target) {
-  return function(guess) {
+function renderGuess(target:string) {
+  return function(guess:string) {
     var labels = labelGuess(target, guess);
     return (<div>
       { guess.split('').map( (letter, i) => <span className={ labels[i] + " cell" } key={i}>{ letter }</span> ) }
@@ -43,10 +45,16 @@ function renderGuess(target) {
   }
 }
 
-function renderInput(input) {
+function renderInput(input:string) {
   return (<div>
     { '12345'.split('').map( (_, i) => <span className={ "guess cell" } key={i}>{ input[i] || '?' }</span> ) }
   </div>);
+}
+
+type PoemData = {
+  title: string,
+  author: string,
+  text: string,
 }
 
 const poems = [
@@ -111,12 +119,12 @@ const poems = [
   },
 ];
 
-function parsePoem(p) {
+function parsePoem(p:PoemData) {
   const words = p.text
     .match(/\b(\w+)\b/g)
     .filter(word => word.length == 5)
     .map(w => w.toUpperCase().trim());
-  const uniqueWords = [ ...new Set(words) ];
+  const uniqueWords = [ ...Array.from(new Set(words).values()) ];
   const target = uniqueWords[Math.floor(Math.random() * uniqueWords.length)];
   console.log(target);
   return {
@@ -128,8 +136,25 @@ function parsePoem(p) {
   };
 }
 
+type ParsedPoem = {
+  title: string,
+  author: string,
+  text: string,
+  words: Array<string>,
+  target: string,
+}
+
+type HomeState = {
+  error: boolean,
+  win: boolean,
+  nextPoem: number,
+  poem: ParsedPoem,
+  guesses: Array<string>,
+  input: string,
+};
+
 class Home extends Component {
-  state = {
+  state:HomeState = {
     error: false,
     win: false,
     nextPoem: 1,
@@ -138,12 +163,14 @@ class Home extends Component {
     input: "",
   };
 
-  onChange = input => {
+  keyboard:any = null;
+
+  onChange = (input:string) => {
     this.setState({ input });
     console.log("Input changed", input);
   };
 
-  onKeyPress = button => {
+  onKeyPress = (button:string) => {
     console.log("Button pressed", button);
 
     if (button === "{guess}") this.handleEnter();
@@ -183,7 +210,7 @@ class Home extends Component {
     );
   };
 
-  onChangeInput = event => {
+  onChangeInput = (event:React.ChangeEvent<HTMLInputElement>) => {
     const input = event.target.value;
     this.setState({ input });
     this.keyboard.setInput(input);
