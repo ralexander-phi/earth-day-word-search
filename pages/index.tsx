@@ -158,8 +158,13 @@ class Home extends Component {
 
     if (! this.state.poem.words.includes(guess)) {
       this.setState({
+        input: "",
         error: "Guess only words from the poem",
-      })
+      },
+      () => {
+        this.keyboard.clearInput();
+      }
+      )
       // TODO: Error: must be in poem
       console.log(this.state.poem.words + " doesn't have " + guess);
       return;
@@ -171,7 +176,7 @@ class Home extends Component {
         error: false,
         win: win,
         input: "",
-        guesses: [ guess, ...this.state.guesses ],
+        guesses: [ ...this.state.guesses, guess ],
       },
       () => {
         this.keyboard.clearInput();
@@ -206,24 +211,22 @@ class Home extends Component {
         <span className="instructions">Guess the hidden word using words from a poem.</span>
         </p>
 
-        <div className="flex-container">
-          <div className="poemBlock">
-          <p className="poem">
-          <span className="poemTitle">{this.state.poem.title}</span>
-          <br />
-          <span className="poemAuthor">By {this.state.poem.author}</span>
-          <br /><br />
-          <span className="poemText">{this.state.poem.text}</span>
-          <br /><br />
-          </p>
-          </div>
+        <div className="poemBlock">
+        <p className="poem">
+        <span className="poemTitle">{this.state.poem.title}</span>
+        <br />
+        <span className="poemAuthor">By {this.state.poem.author}</span>
+        <br /><br />
+        <span className="poemText">{this.state.poem.text}</span>
+        <br /><br />
+        </p>
+        </div>
 
-          <div className="game">
-            <>
-              { this.state.win || renderInput(this.state.input) }
-            </>
-            <>{ this.state.guesses.map(renderGuess(this.state.poem.target)) }</>
-          </div>
+        <div className="game">
+          <>{ this.state.guesses.map(renderGuess(this.state.poem.target)) }</>
+          <>
+            { this.state.win || renderInput(this.state.input) }
+          </>
         </div>
 
         <div>
