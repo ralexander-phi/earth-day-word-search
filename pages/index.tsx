@@ -111,10 +111,6 @@ const poems = [
   },
 ];
 
-function randomPoem() {
-  return parsePoem(poems[Math.floor(Math.random() * poems.length)]);
-}
-
 function parsePoem(p) {
   const words = p.text
     .match(/\b(\w+)\b/g)
@@ -136,6 +132,7 @@ class Home extends Component {
   state = {
     error: false,
     win: false,
+    nextPoem: 1,
     poem: parsePoem(poems[0]),
     guesses: [],
     input: "",
@@ -194,7 +191,8 @@ class Home extends Component {
     this.setState({
         win: false,
         guesses: [],
-        poem: randomPoem(),
+        nextPoem: (this.state.nextPoem + 1) % poems.length,
+        poem: parsePoem(poems[this.state.nextPoem]),
         input: "",
       },
       () => {
