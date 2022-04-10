@@ -83,6 +83,7 @@ function parsePoem(p) {
 
 class Home extends Component {
   state = {
+    error: false,
     win: false,
     poem: parsePoem(poems[0]),
     guesses: [],
@@ -105,6 +106,9 @@ class Home extends Component {
     const target = this.state.poem.target;
 
     if (! this.state.poem.words.includes(guess)) {
+      this.setState({
+        error: "Guess only words from the poem",
+      })
       // TODO: Error: must be in poem
       console.log(this.state.poem.words + " doesn't have " + guess);
       return;
@@ -113,6 +117,7 @@ class Home extends Component {
     const win = this.state.poem.target == guess;
 
     this.setState({
+        error: false,
         win: win,
         input: "",
         guesses: [ guess, ...this.state.guesses ],
@@ -170,16 +175,21 @@ class Home extends Component {
           </div>
         </div>
 
-        <>
+        <div>
           { !this.state.win || 
             <>
-              <h2>Congratulations!</h2>
+              <h2 className="congratulations">Congratulations!</h2>
               <button className="new-game" onClick={ () => { this.newGame() } }>
                 New Game
               </button>
             </>
           }
-        </>
+          { !this.state.error ||
+            <>
+              <span className="error-message">{ this.state.error }</span>
+            </>
+          }
+        </div>
 
         { this.state.win || 
           <Keyboard
