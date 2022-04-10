@@ -10,28 +10,36 @@ import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
 
 function labelGuess(target, guess) {
-    var labels = ['miss', 'miss', 'miss', 'miss', 'miss'];
-    for (var i = 0; i < 5; i += 1) {
-      if (target.includes(guess[i])) {
+  var labels = ['miss', 'miss', 'miss', 'miss', 'miss'];
+
+  var moveMe = [];
+  for (var i = 0; i < 5; i += 1) {
+    if (guess[i] == target[i]) {
+      labels[i] = 'match';
+    } else {
+      moveMe.push(target[i]);
+    }
+  }
+
+  for (var i = 0; i < 5; i += 1) {
+    if (labels[i] != 'match') {
+      var pos = moveMe.indexOf(guess[i]);
+      if (pos >= 0) {
         labels[i] = 'move';
+        delete moveMe[pos];
       }
     }
+  }
 
-    for (var i = 0; i < 5; i += 1) {
-      if (guess[i] == target[i]) {
-        labels[i] = 'match';
-      }
-    }
-
-    return labels;
+  return labels;
 }
 
 function renderGuess(target) {
   return function(guess) {
     var labels = labelGuess(target, guess);
-    return (<div>
-        { guess.split('').map( (letter, i) => <span className={ labels[i] + " cell" }>{ letter }</span> ) }
-        </div>);
+    return (<ol>
+        { guess.split('').map( (letter, i) => <li className={ labels[i] + " cell" } key={i}>{ letter }</li> ) }
+        </ol>);
   }
 }
 
@@ -44,6 +52,7 @@ class Home extends Component {
                with a common heart
                we love the Earth
                our long-time home`,
+      "words": ["PLACE", "SHARE", "HEART", "EARTH"],
       "title": "Blue Home",
       "author": "Robert Alexander",
       "target": "EARTH",
@@ -69,11 +78,8 @@ class Home extends Component {
 
     console.log("guess " + guess);
 
-    // TODO: Checks:
-    // length
-    // in poem
-    // only letters
-    if (guess.length != 5) {
+    if (! this.state.poem.words.includes(guess)) {
+      // TODO: Error: must be in poem
       return;
     }
 
