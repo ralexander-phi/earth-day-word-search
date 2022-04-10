@@ -37,26 +37,54 @@ function labelGuess(target, guess) {
 function renderGuess(target) {
   return function(guess) {
     var labels = labelGuess(target, guess);
-    return (<ol>
-        { guess.split('').map( (letter, i) => <li className={ labels[i] + " cell" } key={i}>{ letter }</li> ) }
-        </ol>);
+    return (<div>
+      { guess.split('').map( (letter, i) => <span className={ labels[i] + " cell" } key={i}>{ letter }</span> ) }
+    </div>);
   }
 }
 
+function renderInput(input) {
+  return (<div>
+    { '12345'.split('').map( (_, i) => <span className={ "guess cell" } key={i}>{ input[i] || '?' }</span> ) }
+  </div>);
+}
+
+const poems = [
+  {
+    "title": "Blue Home",
+    "author": "Robert Alexander",
+    "text": `The place we share
+              with a common heart
+              we love the Earth
+              our long-time home`,
+  },
+];
+
+function randomPoem() {
+  return parsePoem(poems[Math.floor(Math.random() * poems.length)]);
+}
+
+function parsePoem(p) {
+  const words = p.text
+    .match(/\b(\w+)\b/g)
+    .filter(word => word.length == 5)
+    .map(w => w.toUpperCase().trim());
+  const uniqueWords = [ ...new Set(words) ];
+  const target = uniqueWords[Math.floor(Math.random() * uniqueWords.length)];
+  console.log(target);
+  return {
+    'title': p.title,
+    'author': p.author,
+    'text': p.text,
+    'words': uniqueWords,
+    'target': target
+  };
+}
 
 class Home extends Component {
   state = {
-    layoutName: "default",
-    poem: {
-      "text": `The place we share
-               with a common heart
-               we love the Earth
-               our long-time home`,
-      "words": ["PLACE", "SHARE", "HEART", "EARTH"],
-      "title": "Blue Home",
-      "author": "Robert Alexander",
-      "target": "EARTH",
-    },
+    win: false,
+    poem: parsePoem(poems[0]),
     guesses: [],
     input: "",
   };
@@ -76,23 +104,42 @@ class Home extends Component {
     const guess = this.state.input.toUpperCase().trim();
     const target = this.state.poem.target;
 
-    console.log("guess " + guess);
-
     if (! this.state.poem.words.includes(guess)) {
       // TODO: Error: must be in poem
+      console.log(this.state.poem.words + " doesn't have " + guess);
       return;
     }
 
+    const win = this.state.poem.target == guess;
+
     this.setState({
-      input: "",
-      guesses: [ ...this.state.guesses, guess ],
-    });
+        win: win,
+        input: "",
+        guesses: [ guess, ...this.state.guesses ],
+      },
+      () => {
+        this.keyboard.clearInput();
+      }
+    );
   };
 
   onChangeInput = event => {
     const input = event.target.value;
     this.setState({ input });
     this.keyboard.setInput(input);
+  };
+
+  newGame = () => {
+    this.setState({
+        win: false,
+        guesses: [],
+        poem: randomPoem(),
+        input: "",
+      },
+      () => {
+        this.keyboard.clearInput();
+      }
+    );
   };
 
   render() {
@@ -115,40 +162,53 @@ class Home extends Component {
           </p>
           </div>
 
-          <div className="game">{ this.state.guesses.map(renderGuess(this.state.poem.target)) }</div>
+          <div className="game">
+            <>
+              { this.state.win || renderInput(this.state.input) }
+            </>
+            <>{ this.state.guesses.map(renderGuess(this.state.poem.target)) }</>
+          </div>
         </div>
 
-        <input
-          value={this.state.input}
-          placeholder={"Tap on the virtual keyboard to start"}
-          onChange={this.onChangeInput}
-        />
-        <Keyboard
-          keyboardRef={r => (this.keyboard = r)}
-          layout={{
-            'default': [
-              'Q W E R T Y U I O P {bksp}',
-              'A S D F G H J K L',
-              'Z X C V B N M {guess}',
-            ]
-          }}
-          display={{
-            '{bksp}': "⇦",
-            '{guess}': "Guess",
-          }}
-          onChange={this.onChange}
-          onKeyPress={this.onKeyPress}
-          buttonTheme={[
-            {
-              class: "hg-guess",
-              buttons: "{guess}",
-            },
-            {
-              class: "hg-bksp",
-              buttons: "{bksp}",
-            }
-          ]}
-        />
+        <>
+          { !this.state.win || 
+            <>
+              <h2>Congratulations!</h2>
+              <button className="new-game" onClick={ () => { this.newGame() } }>
+                New Game
+              </button>
+            </>
+          }
+        </>
+
+        { this.state.win || 
+          <Keyboard
+            keyboardRef={r => (this.keyboard = r)}
+            layout={{
+              'default': [
+                'Q W E R T Y U I O P {bksp}',
+                'A S D F G H J K L',
+                'Z X C V B N M {guess}',
+              ]
+            }}
+            display={{
+              '{bksp}': "⇦",
+              '{guess}': "Guess",
+            }}
+            onChange={this.onChange}
+            onKeyPress={this.onKeyPress}
+            buttonTheme={[
+              {
+                class: "hg-guess",
+                buttons: "{guess}",
+              },
+              {
+                class: "hg-bksp",
+                buttons: "{bksp}",
+              }
+            ]}
+          />
+        }
         <p>
         <span className="instructions">Inspired by <a href="https://www.nytimes.com/games/wordle/index.html">Wordle</a> and our home planet.</span>
         </p>
