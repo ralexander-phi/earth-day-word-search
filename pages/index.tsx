@@ -54,9 +54,60 @@ const poems = [
     "title": "Blue Home",
     "author": "Robert Alexander",
     "text": `The place we share
-              with a common heart
+              with common heart
               we love the Earth
-              our long-time home`,
+              our long-time home.`,
+  },
+  {
+    "title": "Until I Saw the Sea",
+    "author": "Lilian Moore",
+    "text": `Until I saw the sea
+              I did not know
+              that wind
+              could wrinkle water so.
+
+              I never knew
+              that sun
+              could splinter a whole sea of blue.
+
+              Nor
+              did I know before,
+              a sea breathes in and out
+              upon a shore.`,
+  },
+  {
+    "title": "Maytime Magic",
+    "author": "Mabel Watts",
+    "text": `A little seed
+              For me to sow…
+
+              A little earth
+              To make it grow…
+              A little hole,
+              A little pat…
+              A little wish,
+              And that is that.
+
+              A little sun,
+              A little shower…
+              A little while,
+              And then – a flower!`,
+  },
+  {
+    "title": "Mother Earth",
+    "author": "Sophia E. Valdez",
+    "text": `The land is in a constant state of birth,
+              Giving life to all who live on Earth.
+              Our carelessness and fears
+              Have taken a toll over the years.
+              Her land is parched and scorched
+              As man continues to light the torch.
+              We continue a want of speed and ease,
+              All while our pesticides kill off our bees.
+              It's time to wake up and see Mother Earth's pain.
+              Humanity's selfishness is becoming insane.
+              Soon her cries will turn to gloom,
+              And man will cause its own doom.`,
   },
 ];
 
